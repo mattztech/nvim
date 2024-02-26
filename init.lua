@@ -43,7 +43,11 @@ P.S. You can delete this when you're done too. It's your config now :)
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.bo.softtabstop = 4
+vim.opt.relativenumber = true
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -200,9 +204,6 @@ require('lazy').setup({
     },
   },
   {
-    "rose-pine/neovim", name = "rose-pine",
-  },
-  {
     -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
     -- Enable `lukas-reineke/indent-blankline.nvim`
@@ -247,7 +248,7 @@ require('lazy').setup({
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
-  require 'kickstart.plugins.autoformat',
+  --  require 'kickstart.plugins.autoformat',
   -- require 'kickstart.plugins.debug',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
@@ -259,74 +260,6 @@ require('lazy').setup({
   { import = 'custom.plugins' },
 }, {})
 
-require("rose-pine").setup({
-  variant = "auto",        -- auto, main, moon, or dawn
-  dark_variant = "main",   -- main, moon, or dawn
-  dim_inactive_windows = false,
-  extend_background_behind_borders = true,
-
-  enable = {
-    terminal = true,
-    legacy_highlights = true,     -- Improve compatibility for previous versions of Neovim
-    migrations = true,            -- Handle deprecated options automatically
-  },
-
-  styles = {
-    bold = true,
-    italic = true,
-    transparency = false,
-  },
-
-  groups = {
-    border = "muted",
-    link = "iris",
-    panel = "surface",
-
-    error = "love",
-    hint = "iris",
-    info = "foam",
-    note = "pine",
-    todo = "rose",
-    warn = "gold",
-
-    git_add = "foam",
-    git_change = "rose",
-    git_delete = "love",
-    git_dirty = "rose",
-    git_ignore = "muted",
-    git_merge = "iris",
-    git_rename = "pine",
-    git_stage = "iris",
-    git_text = "rose",
-    git_untracked = "subtle",
-
-    h1 = "iris",
-    h2 = "foam",
-    h3 = "rose",
-    h4 = "gold",
-    h5 = "pine",
-    h6 = "foam",
-  },
-
-  highlight_groups = {
-    -- Comment = { fg = "foam" },
-    -- VertSplit = { fg = "muted", bg = "muted" },
-  },
-
-  before_highlight = function(group, highlight, palette)
-    -- Disable all undercurls
-    -- if highlight.undercurl then
-    --     highlight.undercurl = false
-    -- end
-    --
-    -- Change palette colour
-    -- if highlight.fg == palette.pine then
-    --     highlight.fg = palette.foam
-    -- end
-  end,
-})
-
-vim.cmd("colorscheme rose-pine")
 -- vim.cmd("colorscheme rose-pine-main")
 -- vim.cmd("colorscheme rose-pine-moon")
 -- vim.cmd("colorscheme rose-pine-dawn")
@@ -453,7 +386,7 @@ vim.api.nvim_create_user_command('LiveGrepGitRoot', live_grep_git_root, {})
 
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>sG', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
@@ -471,11 +404,11 @@ end
 vim.keymap.set('n', '<leader>s/', telescope_live_grep_open_files, { desc = '[S]earch [/] in Open Files' })
 vim.keymap.set('n', '<leader>ss', require('telescope.builtin').builtin, { desc = '[S]earch [S]elect Telescope' })
 vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>ff', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
-vim.keymap.set('n', '<leader>sG', ':LiveGrepGitRoot<cr>', { desc = '[S]earch by [G]rep on Git Root' })
+vim.keymap.set('n', '<leader><space>', ':LiveGrepGitRoot<cr>', { desc = '[S]earch by [G]rep on Git Root' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
 
@@ -488,7 +421,7 @@ vim.defer_fn(function()
     ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim', 'bash' },
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-    auto_install = false,
+    auto_install = true,
     -- Install languages synchronously (only applied to `ensure_installed`)
     sync_install = false,
     -- List of parsers to ignore installing
@@ -633,11 +566,14 @@ require('mason-lspconfig').setup()
 --  define the property 'filetypes' to the map in question.
 local servers = {
   -- clangd = {},
-  -- gopls = {},
-  -- pyright = {},
+  gopls = {
+    completeUnimported = true,
+    usePlaceholders = true,
+    gofumpt = true,
+    buildFlags = { '-tags=integration,unit' },
+  },
+  templ = {},
   -- rust_analyzer = {},
-  -- tsserver = {},
-  -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
   lua_ls = {
     Lua = {
@@ -700,15 +636,6 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_locally_jumpable() then
-        luasnip.expand_or_jump()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
     ['<S-Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
